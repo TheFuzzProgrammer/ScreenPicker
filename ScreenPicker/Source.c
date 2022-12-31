@@ -1,25 +1,22 @@
 #include "screen_handler.h"
+#include <stdlib.h>
+#include <wchar.h>
+#pragma warning(suppress : 4996)
 
-int main(int argc, unsigned short* argv[]) {
+int main(int argc, char *argv[]) {
 
-    unsigned int* file_path;
-
-    int path_length;
-   
     if (argc < 2) {
-        const unsigned short s = sizeof(char) / sizeof(*argv[0]);
-        printf("Not enough arguments for: %s\n", (char*)argv[0]);
+        const unsigned short s = sizeof(unsigned char) / sizeof(*argv[0]);
+        printf("Not enough arguments for: %s\n", (unsigned char*)argv[0]);
         printf(" path missed?");
         return 1;
     }
-    else {
-        path_length = sizeof(*argv[1]) / sizeof(char);
-        file_path = malloc(path_length * sizeof(unsigned int));
-        for (int i = 0; i < path_length; i++) {
-            file_path[i] = (unsigned int)argv[i];
-        }
-    }
-
+    
+    //get path from param
+    size_t pathL = sizeof(unsigned char) / sizeof(argv[1]);
+    wchar_t wPath[256];
+    size_t c_conv;
+    errno_t errResult = mbstowcs_s(&c_conv, wPath, 256, argv[1], _TRUNCATE);
 
     STARTUPINFO startupInfo;
     PROCESS_INFORMATION pi;
@@ -84,7 +81,7 @@ int main(int argc, unsigned short* argv[]) {
             return 6;
         }
 
-        if (!SaveBitmap(file_path, hBitmap, &file)) {
+        if (!SaveBitmap(wPath, hBitmap, &file)) {
             return 7;
         }
         SelectObject(hdcBmp, hbitmap_old);

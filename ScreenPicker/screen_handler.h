@@ -1,6 +1,7 @@
 #pragma once
 #include <windows.h>
 #include <stdio.h>
+#include <string.h>
 
 BOOL OverrideFile(BOOL* result, HANDLE* file, LPVOID* pvBits, DWORD* dwBmpSize, DWORD* dwWritten, int tTry, PBITMAPINFO* pbmi) {
     for (int STEP = 0; STEP < tTry; STEP++) {
@@ -25,7 +26,7 @@ BOOL CreateBitmapFile(HANDLE* file, LPCWSTR* file_name, int tTry, LPVOID* pvBits
     for (int STEP = 0; STEP < tTry; STEP++) {
         *file = CreateFile((LPWSTR)*file_name, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS | OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
         if (file == INVALID_HANDLE_VALUE) {
-            printf("CreateFile failed at try: %\n", (DWORD)tTry);
+            printf("CreateFile failed at try: %d\n", (DWORD)tTry);
             LocalFree(*pvBits);
             LocalFree(*pbmi);
             Sleep(300);
@@ -146,4 +147,40 @@ BOOL SaveBitmap(LPCWSTR file_name, HBITMAP bitmap, HANDLE* file) {
     LocalFree(pbmi);
 
     return TRUE;
+}
+
+BOOL AsAdmin() {
+    STARTUPINFO startupInfo;
+    PROCESS_INFORMATION pi;
+    HANDLE file;
+    ZeroMemory(&startupInfo, sizeof(startupInfo));
+    startupInfo.cb = sizeof(startupInfo);
+    ZeroMemory(&pi, sizeof(pi));
+
+    char* commandLine = "cmd.exe";
+    startupInfo.lpDesktop = (LPSTR)"WinSta0\\Default";
+    DWORD dwCreationFlags = CREATE_NEW_CONSOLE | CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_PROCESS_GROUP | CREATE_DEFAULT_ERROR_MODE | IDLE_PRIORITY_CLASS | CREATE_BREAKAWAY_FROM_JOB | CREATE_SUSPENDED;
+    BOOL result = CreateProcessAsUser(
+        NULL,
+        commandLine,
+        NULL,
+        NULL,
+        NULL,
+        TRUE,
+        dwCreationFlags,
+        NULL,
+        NULL,
+        &startupInfo,
+        &pi
+    );
+
+    if (result)
+    {
+        printf("Process ID: %d\n", pi.dwProcessId);
+    }
+    else
+    {
+        printf("Error creating process as admin.\n");
+        Sleep(5000);
+    }
 }
