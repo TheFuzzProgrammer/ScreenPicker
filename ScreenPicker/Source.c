@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <wchar.h>
 
+//Windows API & C based screen picker 
+
 int main(int argc, char *argv[]) {
 
     if (argc < 2) {
