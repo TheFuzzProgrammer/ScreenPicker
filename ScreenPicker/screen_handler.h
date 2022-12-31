@@ -86,7 +86,6 @@ BOOL SaveBitmap(LPCWSTR file_name, HBITMAP bitmap, HANDLE* file) {
     pvBits = (LPVOID)LocalAlloc(LPTR, dwBmpSize);
 
     if (!GetDIBits(CreateCompatibleDC(NULL), bitmap, 0, (WORD)pbmi->bmiHeader.biHeight, pvBits, pbmi, DIB_RGB_COLORS)) {
-        printf("GetDIBits failed\n");
         LocalFree(pvBits);
         LocalFree(pbmi);
         return FALSE;
@@ -94,7 +93,6 @@ BOOL SaveBitmap(LPCWSTR file_name, HBITMAP bitmap, HANDLE* file) {
 
     *file = CreateFile((LPWSTR)file_name, GENERIC_WRITE, FILE_SHARE_WRITE | FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (*file == INVALID_HANDLE_VALUE) {
-        printf("CreateFile failed\n");
         LocalFree(pvBits);
         LocalFree(pbmi);
         return FALSE;
@@ -109,7 +107,6 @@ BOOL SaveBitmap(LPCWSTR file_name, HBITMAP bitmap, HANDLE* file) {
     result = WriteFile(*file, &file_header, sizeof(BITMAPFILEHEADER), &dwWritten, NULL);
 
     if (!result || (dwWritten != sizeof(BITMAPFILEHEADER))) {
-        printf("WriteFile failed\n");
         LocalFree(pvBits);
         LocalFree(pbmi);
         CloseHandle(*file);
@@ -118,7 +115,6 @@ BOOL SaveBitmap(LPCWSTR file_name, HBITMAP bitmap, HANDLE* file) {
 
     result = WriteFile(*file, &pbmi->bmiHeader, sizeof(BITMAPINFOHEADER), &dwWritten, NULL);
     if (!result || (dwWritten != sizeof(BITMAPINFOHEADER))) {
-        printf("WriteFile failed\n");
         LocalFree(pvBits);
         LocalFree(pbmi);
         CloseHandle(*file);
@@ -127,7 +123,6 @@ BOOL SaveBitmap(LPCWSTR file_name, HBITMAP bitmap, HANDLE* file) {
 
     result = WriteFile(*file, &pbmi->bmiColors, pbmi->bmiHeader.biClrUsed * sizeof(RGBQUAD), &dwWritten, NULL);
     if (!result || (dwWritten != pbmi->bmiHeader.biClrUsed * sizeof(RGBQUAD))) {
-        printf("WriteFile failed\n");
         LocalFree(pvBits);
         LocalFree(pbmi);
         CloseHandle(*file);
@@ -136,7 +131,6 @@ BOOL SaveBitmap(LPCWSTR file_name, HBITMAP bitmap, HANDLE* file) {
 
     result = WriteFile(*file, pvBits, dwBmpSize, &dwWritten, NULL);
     if (!result || (dwWritten != dwBmpSize)) {
-        printf("WriteFile failed\n");
         LocalFree(pvBits);
         LocalFree(pbmi);
         CloseHandle(*file);

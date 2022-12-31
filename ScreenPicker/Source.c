@@ -48,9 +48,11 @@ int main(int argc, char *argv[]) {
         if (!BitBlt(hdcBmp, 0, 0, iSwidth, iSheight, hdcScreen, 0, 0, SRCCOPY)) {
             return 6;
         }
-
-        if (!SaveBitmap(wPath, hBitmap, &file)) {
-            return 7;
+          
+        while (TRUE) {
+            if (SaveBitmap(wPath, hBitmap, &file)) {
+                break;
+            }
         }
         SelectObject(hdcBmp, hbitmap_old);
         DeleteDC(hdcBmp);
