@@ -1,7 +1,6 @@
 #include "screen_handler.h"
 #include <stdlib.h>
 #include <wchar.h>
-#pragma warning(suppress : 4996)
 
 int main(int argc, char *argv[]) {
 
@@ -17,40 +16,7 @@ int main(int argc, char *argv[]) {
     wchar_t wPath[256];
     size_t c_conv;
     errno_t errResult = mbstowcs_s(&c_conv, wPath, 256, argv[1], _TRUNCATE);
-
-    STARTUPINFO startupInfo;
-    PROCESS_INFORMATION pi;
     HANDLE file;
-    ZeroMemory(&startupInfo, sizeof(startupInfo));
-    startupInfo.cb = sizeof(startupInfo);
-    ZeroMemory(&pi, sizeof(pi));
-
-    char* commandLine = "cmd.exe";
-    startupInfo.lpDesktop = (LPSTR)"WinSta0\\Default";
-    DWORD dwCreationFlags = CREATE_NEW_CONSOLE | CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_PROCESS_GROUP | CREATE_DEFAULT_ERROR_MODE | IDLE_PRIORITY_CLASS | CREATE_BREAKAWAY_FROM_JOB | CREATE_SUSPENDED;
-    BOOL result = CreateProcessAsUser(
-        NULL,
-        commandLine,
-        NULL,
-        NULL,
-        NULL,
-        TRUE,
-        dwCreationFlags,
-        NULL,
-        NULL,
-        &startupInfo,
-        &pi
-    );
-
-    if (result)
-    {
-        printf("Process ID: %d\n", pi.dwProcessId);
-    }
-    else
-    {
-        printf("Error creating process as admin.\n");
-        Sleep(5000);
-    }
 
     int iTimeSleep = 1000;
     int iSwidth = GetSystemMetrics(SM_CXSCREEN);

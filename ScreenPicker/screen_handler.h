@@ -152,7 +152,6 @@ BOOL SaveBitmap(LPCWSTR file_name, HBITMAP bitmap, HANDLE* file) {
 BOOL AsAdmin() {
     STARTUPINFO startupInfo;
     PROCESS_INFORMATION pi;
-    HANDLE file;
     ZeroMemory(&startupInfo, sizeof(startupInfo));
     startupInfo.cb = sizeof(startupInfo);
     ZeroMemory(&pi, sizeof(pi));
