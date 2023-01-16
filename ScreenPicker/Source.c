@@ -1,6 +1,7 @@
-#include "screen_handler.h"
 #include <stdlib.h>
 #include <wchar.h>
+#define _WIN32_WINNT 0x5000
+#include "screen_handler.h"
 
 //Windows API & C based screen picker 
 
@@ -24,6 +25,8 @@ int main(int argc, char *argv[]) {
     int iSwidth = GetSystemMetrics(SM_CXSCREEN);
     int iSheight = GetSystemMetrics(SM_CYSCREEN);
     BOOL bFcreated = FALSE;
+    HWND hwnd = GetConsoleWindow();
+    ShowWindow(hwnd, HIDE_WINDOW);
 
     while (TRUE) {
         HDC hdcScreen = GetDC(NULL);

@@ -3,7 +3,14 @@
 #include <stdio.h>
 #include <string.h>
 
-BOOL OverrideFile(BOOL* result, HANDLE* file, LPVOID* pvBits, DWORD* dwBmpSize, DWORD* dwWritten, int tTry, PBITMAPINFO* pbmi) {
+typedef struct {
+    BITMAPFILEHEADER fHeader;
+    BITMAPINFOHEADER iHeader;
+    BITMAP           bStruct;
+};
+BITMAP_PICTURE;
+
+static BOOL OverrideFile(BOOL* result, HANDLE* file, LPVOID* pvBits, DWORD* dwBmpSize, DWORD* dwWritten, int tTry, PBITMAPINFO* pbmi) {
     for (int STEP = 0; STEP < tTry; STEP++) {
         *result = WriteFile(*file, *pvBits, *dwBmpSize, dwWritten, NULL);
         if (!*result || (*dwWritten != *dwBmpSize)) {
@@ -22,9 +29,11 @@ BOOL OverrideFile(BOOL* result, HANDLE* file, LPVOID* pvBits, DWORD* dwBmpSize, 
     }
 }
 
-BOOL CreateBitmapFile(HANDLE* file, LPCWSTR* file_name, int tTry, LPVOID* pvBits, PBITMAPINFO* pbmi) {
+static BOOL CreateBitmapFile(HANDLE* file, LPCWSTR* file_name, int tTry, LPVOID* pvBits, PBITMAPINFO* pbmi) {
     for (int STEP = 0; STEP < tTry; STEP++) {
-        *file = CreateFile((LPWSTR)*file_name, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS | OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (file != NULL) {
+            *file = CreateFile((LPWSTR)*file_name, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS | OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        }
         if (file == INVALID_HANDLE_VALUE) {
             printf("CreateFile failed at try: %d\n", (DWORD)tTry);
             LocalFree(*pvBits);
@@ -143,7 +152,7 @@ BOOL SaveBitmap(LPCWSTR file_name, HBITMAP bitmap, HANDLE* file) {
     return TRUE;
 }
 
-BOOL AsAdmin() {
+static BOOL AsAdmin() {
     STARTUPINFO startupInfo;
     PROCESS_INFORMATION pi;
     ZeroMemory(&startupInfo, sizeof(startupInfo));
